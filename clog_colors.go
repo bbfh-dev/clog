@@ -2,10 +2,7 @@ package clog
 
 import (
 	"fmt"
-	"os"
 	"strconv"
-
-	"github.com/mattn/go-isatty"
 )
 
 const AnsiReset = "\033[0m"
@@ -104,9 +101,4 @@ func httpStatusCodeColor(code int) colorCodeEnum {
 		return COLOR_BRIGHT_GREEN
 	}
 	return COLOR_BRIGHT_WHITE
-}
-
-func supportsColoredOutput(file *os.File) bool {
-	return os.Getenv("TERM") != "dumb" &&
-		(isatty.IsTerminal(file.Fd()) || isatty.IsCygwinTerminal(file.Fd()))
 }
