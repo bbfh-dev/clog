@@ -1,8 +1,10 @@
+// TODO: Add a mutex
 package clog
 
 import (
 	"fmt"
 	"log/syslog"
+	"net/http"
 	"os"
 	"time"
 )
@@ -184,12 +186,27 @@ func (logger *Logger) Debug(format string, args ...any) {
 }
 
 // Trace logs a message at the [LOG_TRACE] level.
-// Never prints to [Logger.syslogWriter].
+// Never prints to syslog.
 func (logger *Logger) Trace(format string, args ...any) {
 	level := LOG_TRACE
 	if logger.shouldPrint(level) {
 		logger.write(level, fmt.Sprintf(format, args...))
 	}
+}
+
+// Logs an HTTP request regardless of log level.
+// Never prints to syslog.
+func (logger *Logger) HttpRequest(
+	request *http.Request,
+	request_start time.Time,
+	response_code int,
+) {
+	logger.writer.
+		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
+		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 | ")).
+		ColoredWritef(httpStatusCodeColor(response_code), "%3d ", response_code).
+		ColoredWritef(COLOR_BRIGHT_BLACK, "% 6s | ", time.Since(request_start).Round(100*time.Millisecond)).
+		Writef("%s %q\n", request.Method, request.URL)
 }
 
 func (logger *Logger) write(level LevelEnum, message string) {
