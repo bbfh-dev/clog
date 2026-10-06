@@ -2,7 +2,10 @@ package clog
 
 import (
 	"fmt"
+	"os"
 	"strconv"
+
+	"github.com/mattn/go-isatty"
 )
 
 const AnsiReset = "\033[0m"
@@ -85,4 +88,25 @@ func AnsiColorFg8(n uint8) string {
 // AnsiColorBg8 sets an 8-bit background color.
 func AnsiColorBg8(n uint8) string {
 	return fmt.Sprintf("\x1b[48;5;%dm", n)
+}
+
+func httpStatusCodeColor(code int) colorCodeEnum {
+	if code >= 500 {
+		return COLOR_BRIGHT_RED
+	}
+	if code >= 400 {
+		return COLOR_BRIGHT_YELLOW
+	}
+	if code >= 300 {
+		return COLOR_BRIGHT_BLUE
+	}
+	if code >= 200 {
+		return COLOR_BRIGHT_GREEN
+	}
+	return COLOR_BRIGHT_WHITE
+}
+
+func supportsColoredOutput(file *os.File) bool {
+	return os.Getenv("TERM") != "dumb" &&
+		(isatty.IsTerminal(file.Fd()) || isatty.IsCygwinTerminal(file.Fd()))
 }
