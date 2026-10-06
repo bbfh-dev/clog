@@ -73,7 +73,6 @@ type Logger struct {
 	syslogWriter *syslog.Writer
 	level        LevelEnum
 	name         string
-	out          *os.File
 	writer       *Writer
 }
 
@@ -83,7 +82,6 @@ func NewLogger(name string, out *os.File) *Logger {
 		syslogWriter: nil,
 		level:        LOG_ERROR,
 		name:         name,
-		out:          out,
 		writer:       NewWriter(out, OUTPUT_AUTO),
 	}
 }
@@ -213,7 +211,7 @@ func (logger *Logger) write(level LevelEnum, message string) {
 	logger.writer.
 		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
 		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
-		FormattedWrite(level.AnsiColor(), level.String()).
+		FormattedWritef(level.AnsiColor(), "% 6s", level.String()).
 		ColoredWrite(COLOR_BRIGHT_BLACK, " | ").
 		Write(message + "\n")
 }

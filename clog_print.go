@@ -30,7 +30,9 @@ func (writer *Writer) Writef(format string, args ...any) *Writer {
 // FormattedWrite applies ANSI escape sequence on the text if the output supports it
 func (writer *Writer) FormattedWrite(ansi string, text string) *Writer {
 	if supportsColoredOutput(writer.out, writer.mode) {
-		fmt.Fprint(writer.out, ansi+text+AnsiReset)
+		writer.out.WriteString(ansi)
+		writer.out.WriteString(text)
+		writer.out.WriteString(AnsiReset)
 	} else {
 		fmt.Fprint(writer.out, text)
 	}
@@ -40,7 +42,9 @@ func (writer *Writer) FormattedWrite(ansi string, text string) *Writer {
 // FormattedWritef applies ANSI escape sequence on the text if the output supports it
 func (writer *Writer) FormattedWritef(ansi string, format string, args ...any) *Writer {
 	if supportsColoredOutput(writer.out, writer.mode) {
-		fmt.Fprint(writer.out, ansi+fmt.Sprintf(format, args...)+AnsiReset)
+		writer.out.WriteString(ansi)
+		fmt.Fprintf(writer.out, format, args...)
+		writer.out.WriteString(AnsiReset)
 	} else {
 		fmt.Fprintf(writer.out, format, args...)
 	}

@@ -43,12 +43,12 @@ func AnsiColor(colors ...colorCodeEnum) string {
 
 	case 1:
 		fg := strconv.Itoa(int(colors[0]) + 30)
-		return "\x033[" + fg + "m"
+		return "\x1b[" + fg + "m"
 
 	case 2:
 		fg := strconv.Itoa(int(colors[0]) + 30)
 		bg := strconv.Itoa(int(colors[1]) + 30)
-		return "\x033[" + fg + ";" + bg + "m"
+		return "\x1b[" + fg + ";" + bg + "m"
 
 	default:
 		panic(fmt.Sprintf("Invalid number of arguments in a call to AnsiColor(%#v)", colors))
