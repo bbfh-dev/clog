@@ -46,3 +46,11 @@ func (writer *Writer) FormattedWritef(ansi string, format string, args ...any) *
 	}
 	return writer
 }
+
+func (write *Writer) ColoredWrite(color colorCodeEnum, text string) *Writer {
+	return write.FormattedWrite(AnsiColor(color), text)
+}
+
+func (write *Writer) ColoredWritef(color colorCodeEnum, format string, args ...any) *Writer {
+	return write.FormattedWritef(AnsiColor(color), format, args...)
+}

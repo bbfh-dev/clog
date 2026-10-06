@@ -70,9 +70,9 @@ const (
 type Logger struct {
 	syslogWriter *syslog.Writer
 	level        LevelEnum
-	outputMode   outputModeEnum
 	name         string
 	out          *os.File
+	writer       *Writer
 }
 
 // NewLogger creates a new logger with default settings.
@@ -80,9 +80,9 @@ func NewLogger(name string, out *os.File) *Logger {
 	return &Logger{
 		syslogWriter: nil,
 		level:        LOG_ERROR,
-		outputMode:   OUTPUT_AUTO,
 		name:         name,
 		out:          out,
+		writer:       NewWriter(out, OUTPUT_AUTO),
 	}
 }
 
@@ -101,7 +101,7 @@ func (logger *Logger) SetLevel(level LevelEnum) *Logger {
 
 // SetOutputMode changes the output color mode.
 func (logger *Logger) SetOutputMode(mode outputModeEnum) *Logger {
-	logger.outputMode = mode
+	logger.writer.mode = mode
 	return logger
 }
 
@@ -193,24 +193,12 @@ func (logger *Logger) Trace(format string, args ...any) {
 }
 
 func (logger *Logger) write(level LevelEnum, message string) {
-	timestamp := time.Now().Format("2006/01/02 15:04:05")
-	if supportsColoredOutput(logger.out, logger.outputMode) {
-		fmt.Fprintf(
-			logger.out,
-			"%s%s %s%s %s%s %s| %s%s\n",
-			AnsiColor(COLOR_BRIGHT_WHITE),
-			logger.name,
-			AnsiColor(COLOR_BRIGHT_BLACK),
-			timestamp,
-			level.AnsiColor(),
-			level,
-			AnsiColor(COLOR_BRIGHT_BLACK),
-			AnsiReset,
-			message,
-		)
-	} else {
-		fmt.Fprintf(logger.out, "%s %s %s | %s\n", logger.name, timestamp, level, message)
-	}
+	logger.writer.
+		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
+		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
+		FormattedWrite(level.AnsiColor(), level.String()).
+		ColoredWrite(COLOR_BRIGHT_BLACK, " | ").
+		Write(message + "\n")
 }
 
 func (logger *Logger) shouldPrint(level LevelEnum) bool {
