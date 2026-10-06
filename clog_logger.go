@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/syslog"
 	"os"
+	"time"
 )
 
 type LevelEnum uint8
@@ -192,20 +193,23 @@ func (logger *Logger) Trace(format string, args ...any) {
 }
 
 func (logger *Logger) write(level LevelEnum, message string) {
+	timestamp := time.Now().Format("2006/01/02 15:04:05")
 	if supportsColoredOutput(logger.out, logger.outputMode) {
 		fmt.Fprintf(
 			logger.out,
-			"%s%s %s%s %s| %s%s\n",
+			"%s%s %s%s %s%s %s| %s%s\n",
 			AnsiColor(COLOR_BRIGHT_WHITE),
 			logger.name,
+			AnsiColor(COLOR_BRIGHT_BLACK),
+			timestamp,
 			level.AnsiColor(),
 			level,
-			AnsiColor(COLOR_WHITE),
+			AnsiColor(COLOR_BRIGHT_BLACK),
 			AnsiReset,
 			message,
 		)
 	} else {
-		fmt.Fprintf(logger.out, "%s %s | %s\n", logger.name, level, message)
+		fmt.Fprintf(logger.out, "%s %s %s | %s\n", logger.name, timestamp, level, message)
 	}
 }
 
