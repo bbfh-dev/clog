@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log/syslog"
 	"os"
-
-	"github.com/mattn/go-isatty"
 )
 
 type LevelEnum uint8
@@ -194,7 +192,7 @@ func (logger *Logger) Trace(format string, args ...any) {
 }
 
 func (logger *Logger) write(level LevelEnum, message string) {
-	if logger.supportsColoredOutput() {
+	if supportsColoredOutput(logger.out, logger.outputMode) {
 		fmt.Fprintf(
 			logger.out,
 			"%s%s %s%s %s| %s%s\n",
@@ -213,9 +211,4 @@ func (logger *Logger) write(level LevelEnum, message string) {
 
 func (logger *Logger) shouldPrint(level LevelEnum) bool {
 	return logger.level >= level
-}
-
-func (logger *Logger) supportsColoredOutput() bool {
-	return os.Getenv("TERM") != "dumb" &&
-		(isatty.IsTerminal(logger.out.Fd()) || isatty.IsCygwinTerminal(logger.out.Fd()))
 }
