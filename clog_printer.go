@@ -3,20 +3,33 @@ package clog
 import (
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/mattn/go-isatty"
 )
 
 type Printer struct {
-	file *os.File
-	mode outputModeEnum
+	file  *os.File
+	mode  outputModeEnum
+	mutex sync.Mutex
 }
 
 func NewPrinter(file *os.File, mode outputModeEnum) *Printer {
 	return &Printer{
-		file: file,
-		mode: mode,
+		file:  file,
+		mode:  mode,
+		mutex: sync.Mutex{},
 	}
+}
+
+func (printer *Printer) Lock() *Printer {
+	printer.mutex.Lock()
+	return printer
+}
+
+func (printer *Printer) Unlock() *Printer {
+	printer.mutex.Unlock()
+	return printer
 }
 
 func (printer *Printer) Write(text string) *Printer {
