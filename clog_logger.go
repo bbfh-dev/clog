@@ -64,8 +64,11 @@ func (level LevelEnum) AnsiColor() string {
 type outputModeEnum uint8
 
 const (
+	// Do not insert any ANSI escape sequences
 	OutputPlain outputModeEnum = iota
+	// Use ANSI escape sequences for colored output
 	OutputColored
+	// Use ANSI escape sequences if the output is a terminal that supports ANSI
 	OutputAuto
 )
 

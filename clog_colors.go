@@ -5,10 +5,12 @@ import (
 	"strconv"
 )
 
-const AnsiReset = "\033[0m"
+// Resets any formatting
+const AnsiReset = "\x1b[0m"
 
 type colorCodeEnum uint8
 
+// 3-bit ANSI colors
 const (
 	ColorBlack colorCodeEnum = iota
 	ColorRed
@@ -20,6 +22,7 @@ const (
 	ColorWhite
 )
 
+// 4-bit ANSI colors
 const (
 	ColorBrightBlack colorCodeEnum = iota + 60
 	ColorBrightRed
@@ -31,7 +34,7 @@ const (
 	ColorBrightWhite
 )
 
-// AnsiColor creates an ansi escape sequence for setting color.
+// AnsiColor creates an ANSI escape sequence for setting color.
 //
 //   - Returns [AnsiReset] when no arguments.
 //   - Allows 1-2 arguments (set foreground & background).
