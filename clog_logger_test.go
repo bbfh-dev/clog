@@ -15,7 +15,7 @@ func TestFormattingAuto(t *testing.T) {
 	logger := clog.NewLogger("TEST", os.Stdout)
 	logger.SetLevel(clog.LogDebug)
 	print(logger)
-	logger.SetOutputMode(clog.OUTPUT_COLORED)
+	logger.SetOutputMode(clog.OutputColored)
 	print(logger)
 }
 

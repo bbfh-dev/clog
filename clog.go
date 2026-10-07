@@ -8,9 +8,9 @@ import (
 
 func supportsColoredOutput(out *os.File, mode outputModeEnum) bool {
 	switch mode {
-	case OUTPUT_PLAIN:
+	case OutputPlain:
 		return false
-	case OUTPUT_COLORED:
+	case OutputColored:
 		return true
 	default:
 		return os.Getenv("TERM") != "dumb" &&

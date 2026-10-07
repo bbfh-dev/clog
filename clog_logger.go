@@ -65,9 +65,9 @@ func (level LevelEnum) AnsiColor() string {
 type outputModeEnum uint8
 
 const (
-	OUTPUT_PLAIN outputModeEnum = iota
-	OUTPUT_COLORED
-	OUTPUT_AUTO
+	OutputPlain outputModeEnum = iota
+	OutputColored
+	OutputAuto
 )
 
 // Refer to [NewLogger]
@@ -84,7 +84,7 @@ func NewLogger(name string, out *os.File) *Logger {
 		syslogWriter: nil,
 		level:        LogError,
 		name:         name,
-		printer:      NewPrinter(out, OUTPUT_AUTO),
+		printer:      NewPrinter(out, OutputAuto),
 	}
 }
 
