@@ -14,31 +14,31 @@ var logMutex sync.Mutex
 type LevelEnum uint8
 
 const (
-	LOG_SILENT  LevelEnum = iota * 4 // Highest priority
-	LOG_FATAL                        // Critical conditions (e.g. crash)
-	LOG_ERROR                        // Error conditions (e.g. failed request)
-	LOG_WARNING                      // Nothing has necessarily failed yet, but action may be needed to prevent failure
-	LOG_NOTICE                       // A normal but significant event that may be worth recording
-	LOG_INFO                         // Routine status information with no problem indicated
-	LOG_DEBUG                        // Detailed diagnostic information intended for troubleshooting
-	LOG_TRACE                        // Detailed execution flow with diagnostic information. NEVER PRINTS TO SYSLOG (may expose secret information)
+	LogSilent  LevelEnum = iota * 4 // Highest priority
+	LogFatal                        // Critical conditions (e.g. crash)
+	LogError                        // Error conditions (e.g. failed request)
+	LogWarning                      // Nothing has necessarily failed yet, but action may be needed to prevent failure
+	LogNotice                       // A normal but significant event that may be worth recording
+	LogInfo                         // Routine status information with no problem indicated
+	LogDebug                        // Detailed diagnostic information intended for troubleshooting
+	LogTrace                        // Detailed execution flow with diagnostic information. NEVER PRINTS TO SYSLOG (may expose secret information)
 )
 
 func (level LevelEnum) String() string {
 	switch level {
-	case LOG_FATAL:
+	case LogFatal:
 		return "FATAL"
-	case LOG_ERROR:
+	case LogError:
 		return "ERROR"
-	case LOG_WARNING:
+	case LogWarning:
 		return "WARN"
-	case LOG_NOTICE:
+	case LogNotice:
 		return "NOTICE"
-	case LOG_INFO:
+	case LogInfo:
 		return "INFO"
-	case LOG_DEBUG:
+	case LogDebug:
 		return "DEBUG"
-	case LOG_TRACE:
+	case LogTrace:
 		return "TRACE"
 	default:
 		return fmt.Sprintf("%d", level)
@@ -47,15 +47,15 @@ func (level LevelEnum) String() string {
 
 func (level LevelEnum) AnsiColor() string {
 	switch level {
-	case LOG_FATAL:
+	case LogFatal:
 		return AnsiColor(ColorRed)
-	case LOG_ERROR:
+	case LogError:
 		return AnsiColor(ColorBrightRed)
-	case LOG_WARNING:
+	case LogWarning:
 		return AnsiColor(ColorBrightYellow)
-	case LOG_NOTICE:
+	case LogNotice:
 		return AnsiColor(ColorBrightBlue)
-	case LOG_INFO:
+	case LogInfo:
 		return AnsiColor(ColorBrightCyan)
 	default:
 		return AnsiColor(ColorWhite)
@@ -82,7 +82,7 @@ type Logger struct {
 func NewLogger(name string, out *os.File) *Logger {
 	return &Logger{
 		syslogWriter: nil,
-		level:        LOG_ERROR,
+		level:        LogError,
 		name:         name,
 		printer:      NewPrinter(out, OUTPUT_AUTO),
 	}
@@ -113,9 +113,9 @@ func (logger *Logger) SetOutputFile(file *os.File) *Logger {
 	return logger
 }
 
-// Fatal logs a message at the [LOG_FATAL] level.
+// Fatal logs a message at the [LogFatal] level.
 func (logger *Logger) Fatal(format string, args ...any) {
-	level := LOG_FATAL
+	level := LogFatal
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
@@ -126,9 +126,9 @@ func (logger *Logger) Fatal(format string, args ...any) {
 	}
 }
 
-// Error logs a message at the [LOG_ERROR] level.
+// Error logs a message at the [LogError] level.
 func (logger *Logger) Error(format string, args ...any) {
-	level := LOG_ERROR
+	level := LogError
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
@@ -139,9 +139,9 @@ func (logger *Logger) Error(format string, args ...any) {
 	}
 }
 
-// Warn logs a message at the [LOG_WARNING] level.
+// Warn logs a message at the [LogWarning] level.
 func (logger *Logger) Warn(format string, args ...any) {
-	level := LOG_WARNING
+	level := LogWarning
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
@@ -152,9 +152,9 @@ func (logger *Logger) Warn(format string, args ...any) {
 	}
 }
 
-// Notice logs a message at the [LOG_NOTICE] level.
+// Notice logs a message at the [LogNotice] level.
 func (logger *Logger) Notice(format string, args ...any) {
-	level := LOG_NOTICE
+	level := LogNotice
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
@@ -165,9 +165,9 @@ func (logger *Logger) Notice(format string, args ...any) {
 	}
 }
 
-// Info logs a message at the [LOG_INFO] level.
+// Info logs a message at the [LogInfo] level.
 func (logger *Logger) Info(format string, args ...any) {
-	level := LOG_INFO
+	level := LogInfo
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
@@ -178,9 +178,9 @@ func (logger *Logger) Info(format string, args ...any) {
 	}
 }
 
-// Debug logs a message at the [LOG_DEBUG] level.
+// Debug logs a message at the [LogDebug] level.
 func (logger *Logger) Debug(format string, args ...any) {
-	level := LOG_DEBUG
+	level := LogDebug
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
@@ -191,10 +191,10 @@ func (logger *Logger) Debug(format string, args ...any) {
 	}
 }
 
-// Trace logs a message at the [LOG_TRACE] level.
+// Trace logs a message at the [LogTrace] level.
 // Never prints to syslog.
 func (logger *Logger) Trace(format string, args ...any) {
-	level := LOG_TRACE
+	level := LogTrace
 	if logger.shouldPrint(level) {
 		logger.write(level, fmt.Sprintf(format, args...))
 	}

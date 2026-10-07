@@ -13,7 +13,7 @@ import (
 
 func TestFormattingAuto(t *testing.T) {
 	logger := clog.NewLogger("TEST", os.Stdout)
-	logger.SetLevel(clog.LOG_DEBUG)
+	logger.SetLevel(clog.LogDebug)
 	print(logger)
 	logger.SetOutputMode(clog.OUTPUT_COLORED)
 	print(logger)
@@ -21,7 +21,7 @@ func TestFormattingAuto(t *testing.T) {
 
 func TestConcurrency(t *testing.T) {
 	var wg sync.WaitGroup
-	logger := clog.NewLogger("TEST", os.Stdout).SetLevel(clog.LOG_INFO)
+	logger := clog.NewLogger("TEST", os.Stdout).SetLevel(clog.LogInfo)
 	for i := range 100 {
 		wg.Go(func() {
 			logger.Info("Call from routine %d", i)
