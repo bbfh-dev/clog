@@ -5,6 +5,7 @@ import (
 	"log/syslog"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -38,7 +39,7 @@ func (level LevelEnum) String() string {
 	case LogTrace:
 		return "TRACE"
 	default:
-		return fmt.Sprintf("%d", level)
+		return strconv.Itoa(int(level))
 	}
 }
 
