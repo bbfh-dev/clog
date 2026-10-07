@@ -3,6 +3,8 @@ package clog
 import (
 	"fmt"
 	"os"
+
+	"github.com/mattn/go-isatty"
 )
 
 type Printer struct {
@@ -29,7 +31,7 @@ func (printer *Printer) Writef(format string, args ...any) *Printer {
 
 // FormattedWrite applies ANSI escape sequence on the text if the output supports it
 func (printer *Printer) FormattedWrite(ansi string, text string) *Printer {
-	if supportsColoredOutput(printer.file, printer.mode) {
+	if printer.supportsColoredOutput() {
 		printer.file.WriteString(ansi)
 		printer.file.WriteString(text)
 		printer.file.WriteString(AnsiReset)
@@ -41,7 +43,7 @@ func (printer *Printer) FormattedWrite(ansi string, text string) *Printer {
 
 // FormattedWritef applies ANSI escape sequence on the text if the output supports it
 func (printer *Printer) FormattedWritef(ansi string, format string, args ...any) *Printer {
-	if supportsColoredOutput(printer.file, printer.mode) {
+	if printer.supportsColoredOutput() {
 		printer.file.WriteString(ansi)
 		fmt.Fprintf(printer.file, format, args...)
 		printer.file.WriteString(AnsiReset)
@@ -57,4 +59,16 @@ func (printer *Printer) ColoredWrite(color colorCodeEnum, text string) *Printer 
 
 func (printer *Printer) ColoredWritef(color colorCodeEnum, format string, args ...any) *Printer {
 	return printer.FormattedWritef(AnsiColor(color), format, args...)
+}
+
+func (printer *Printer) supportsColoredOutput() bool {
+	switch printer.mode {
+	case OutputPlain:
+		return false
+	case OutputColored:
+		return true
+	default:
+		return os.Getenv("TERM") != "dumb" &&
+			(isatty.IsTerminal(printer.file.Fd()) || isatty.IsCygwinTerminal(printer.file.Fd()))
+	}
 }
