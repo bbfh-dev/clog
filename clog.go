@@ -13,7 +13,10 @@ func supportsColoredOutput(out *os.File, mode outputModeEnum) bool {
 	case OutputColored:
 		return true
 	default:
-		return os.Getenv("TERM") != "dumb" &&
-			(isatty.IsTerminal(out.Fd()) || isatty.IsCygwinTerminal(out.Fd()))
+		return os.Getenv("TERM") != "dumb" && isTerminal(out)
 	}
+}
+
+func isTerminal(out *os.File) bool {
+	return isatty.IsTerminal(out.Fd()) || isatty.IsCygwinTerminal(out.Fd())
 }
