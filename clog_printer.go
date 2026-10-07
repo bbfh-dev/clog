@@ -10,21 +10,19 @@ import (
 
 // Refer to [NewPrinter].
 type Printer struct {
-	file                        *os.File
-	mode                        outputModeEnum
-	mutex                       sync.Mutex
-	cachedSupportsColoredOutput bool
+	file             *os.File
+	mode             outputModeEnum
+	mutex            sync.Mutex
+	useColoredOutput bool // cached
 }
 
 // NewPrinter creates a new wrapper around [os.File] with specific output mode.
 func NewPrinter(file *os.File, mode outputModeEnum) *Printer {
 	printer := &Printer{
 		file:  file,
-		mode:  mode,
 		mutex: sync.Mutex{},
 	}
-	printer.cachedSupportsColoredOutput = printer.supportsColoredOutput()
-	return printer
+	return printer.SetOutputMode(mode)
 }
 
 // Lock MUST be called in the beginning of the write method chain
@@ -44,7 +42,7 @@ func (printer *Printer) Unlock() *Printer {
 
 func (printer *Printer) SetOutputMode(mode outputModeEnum) *Printer {
 	printer.mode = mode
-	printer.cachedSupportsColoredOutput = printer.supportsColoredOutput()
+	printer.useColoredOutput = printer.supportsColoredOutput()
 	return printer
 }
 
@@ -65,7 +63,7 @@ func (printer *Printer) Writeln(line string) *Printer {
 
 // Styled applies ANSI escape sequence on the text if the output supports it.
 func (printer *Printer) Styled(ansi string, text string) *Printer {
-	if printer.cachedSupportsColoredOutput {
+	if printer.useColoredOutput {
 		printer.file.WriteString(ansi)
 		printer.file.WriteString(text)
 		printer.file.WriteString(AnsiReset)
@@ -77,7 +75,7 @@ func (printer *Printer) Styled(ansi string, text string) *Printer {
 
 // Styledf applies ANSI escape sequence on the text if the output supports it.
 func (printer *Printer) Styledf(ansi string, format string, args ...any) *Printer {
-	if printer.cachedSupportsColoredOutput {
+	if printer.useColoredOutput {
 		printer.file.WriteString(ansi)
 		fmt.Fprintf(printer.file, format, args...)
 		printer.file.WriteString(AnsiReset)
