@@ -105,7 +105,7 @@ func (logger *Logger) SetLevel(level LevelEnum) *Logger {
 
 // SetOutputMode changes the output color mode.
 func (logger *Logger) SetOutputMode(mode outputModeEnum) *Logger {
-	logger.printer.mode = mode
+	logger.printer.SetOutputMode(mode)
 	return logger
 }
 
