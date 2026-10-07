@@ -63,7 +63,7 @@ func (printer *Printer) Writeln(line string) *Printer {
 	return printer
 }
 
-// Styled applies ANSI escape sequence on the text if the output supports it
+// Styled applies ANSI escape sequence on the text if the output supports it.
 func (printer *Printer) Styled(ansi string, text string) *Printer {
 	if printer.cachedSupportsColoredOutput {
 		printer.file.WriteString(ansi)
@@ -75,7 +75,7 @@ func (printer *Printer) Styled(ansi string, text string) *Printer {
 	return printer
 }
 
-// Styledf applies ANSI escape sequence on the text if the output supports it
+// Styledf applies ANSI escape sequence on the text if the output supports it.
 func (printer *Printer) Styledf(ansi string, format string, args ...any) *Printer {
 	if printer.cachedSupportsColoredOutput {
 		printer.file.WriteString(ansi)
@@ -87,14 +87,24 @@ func (printer *Printer) Styledf(ansi string, format string, args ...any) *Printe
 	return printer
 }
 
-// Colored is sugar code for [Printer.Styled]
+// Styledln is sugar code for [Printer.Styled].
+func (printer *Printer) Styledln(ansi string, line string) *Printer {
+	return printer.Styled(ansi, line+"\n")
+}
+
+// Colored is sugar code for [Printer.Styled].
 func (printer *Printer) Colored(color colorCodeEnum, text string) *Printer {
 	return printer.Styled(AnsiColor(color), text)
 }
 
-// Coloredf is sugar code for [Printer.Styledf]
+// Coloredf is sugar code for [Printer.Styledf].
 func (printer *Printer) Coloredf(color colorCodeEnum, format string, args ...any) *Printer {
 	return printer.Styledf(AnsiColor(color), format, args...)
+}
+
+// Coloredln is sugar code for [Printer.Colored].
+func (printer *Printer) Coloredln(color colorCodeEnum, line string) *Printer {
+	return printer.Colored(color, line+"\n")
 }
 
 func (printer *Printer) supportsColoredOutput() bool {
