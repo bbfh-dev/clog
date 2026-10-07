@@ -115,88 +115,61 @@ func (logger *Logger) SetOutputFile(file *os.File) *Logger {
 
 // Fatal logs a message at the [LogFatal] level.
 func (logger *Logger) Fatal(format string, args ...any) {
-	level := LogFatal
-	if logger.shouldPrint(level) {
-		message := fmt.Sprintf(format, args...)
-		if logger.syslogWriter != nil {
-			logger.syslogWriter.Crit(message) // ignore error
-		}
-
-		logger.write(level, message)
-	}
+	logger.genericLog(LogFatal, format, args)
 }
 
 // Error logs a message at the [LogError] level.
 func (logger *Logger) Error(format string, args ...any) {
-	level := LogError
-	if logger.shouldPrint(level) {
-		message := fmt.Sprintf(format, args...)
-		if logger.syslogWriter != nil {
-			logger.syslogWriter.Err(message) // ignore error
-		}
-
-		logger.write(level, message)
-	}
+	logger.genericLog(LogError, format, args)
 }
 
 // Warn logs a message at the [LogWarning] level.
 func (logger *Logger) Warn(format string, args ...any) {
-	level := LogWarning
-	if logger.shouldPrint(level) {
-		message := fmt.Sprintf(format, args...)
-		if logger.syslogWriter != nil {
-			logger.syslogWriter.Warning(message) // ignore error
-		}
-
-		logger.write(level, message)
-	}
+	logger.genericLog(LogWarning, format, args)
 }
 
 // Notice logs a message at the [LogNotice] level.
 func (logger *Logger) Notice(format string, args ...any) {
-	level := LogNotice
-	if logger.shouldPrint(level) {
-		message := fmt.Sprintf(format, args...)
-		if logger.syslogWriter != nil {
-			logger.syslogWriter.Notice(message) // ignore error
-		}
-
-		logger.write(level, message)
-	}
+	logger.genericLog(LogNotice, format, args)
 }
 
 // Info logs a message at the [LogInfo] level.
 func (logger *Logger) Info(format string, args ...any) {
-	level := LogInfo
-	if logger.shouldPrint(level) {
-		message := fmt.Sprintf(format, args...)
-		if logger.syslogWriter != nil {
-			logger.syslogWriter.Info(message) // ignore error
-		}
-
-		logger.write(level, message)
-	}
+	logger.genericLog(LogInfo, format, args)
 }
 
 // Debug logs a message at the [LogDebug] level.
 func (logger *Logger) Debug(format string, args ...any) {
-	level := LogDebug
-	if logger.shouldPrint(level) {
-		message := fmt.Sprintf(format, args...)
-		if logger.syslogWriter != nil {
-			logger.syslogWriter.Debug(message) // ignore error
-		}
-
-		logger.write(level, message)
-	}
+	logger.genericLog(LogDebug, format, args)
 }
 
 // Trace logs a message at the [LogTrace] level.
 // Never prints to syslog.
 func (logger *Logger) Trace(format string, args ...any) {
-	level := LogTrace
+	logger.genericLog(LogTrace, format, args)
+}
+
+func (logger *Logger) genericLog(level LevelEnum, format string, args []any) {
 	if logger.shouldPrint(level) {
-		logger.write(level, fmt.Sprintf(format, args...))
+		message := fmt.Sprintf(format, args...)
+		if logger.syslogWriter != nil {
+			switch level {
+			case LogFatal:
+				logger.syslogWriter.Crit(message)
+			case LogError:
+				logger.syslogWriter.Err(message)
+			case LogWarning:
+				logger.syslogWriter.Warning(message)
+			case LogNotice:
+				logger.syslogWriter.Notice(message)
+			case LogInfo:
+				logger.syslogWriter.Info(message)
+			case LogDebug:
+				logger.syslogWriter.Debug(message)
+			}
+		}
+
+		logger.write(level, message)
 	}
 }
 
