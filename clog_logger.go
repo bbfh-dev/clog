@@ -75,7 +75,7 @@ type Logger struct {
 	syslogWriter *syslog.Writer
 	level        LevelEnum
 	name         string
-	writer       *Writer
+	printer      *Printer
 }
 
 // NewLogger creates a new logger with default settings.
@@ -84,7 +84,7 @@ func NewLogger(name string, out *os.File) *Logger {
 		syslogWriter: nil,
 		level:        LOG_ERROR,
 		name:         name,
-		writer:       NewWriter(out, OUTPUT_AUTO),
+		printer:      NewPrinter(out, OUTPUT_AUTO),
 	}
 }
 
@@ -103,13 +103,13 @@ func (logger *Logger) SetLevel(level LevelEnum) *Logger {
 
 // SetOutputMode changes the output color mode.
 func (logger *Logger) SetOutputMode(mode outputModeEnum) *Logger {
-	logger.writer.mode = mode
+	logger.printer.mode = mode
 	return logger
 }
 
 // SetOutputFile changes the output file (could be [os.Stdout] or similar).
 func (logger *Logger) SetOutputFile(file *os.File) *Logger {
-	logger.writer.out = file
+	logger.printer.file = file
 	return logger
 }
 
@@ -209,7 +209,7 @@ func (logger *Logger) HttpRequest(
 ) {
 	logMutex.Lock()
 	defer logMutex.Unlock()
-	logger.writer.
+	logger.printer.
 		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
 		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		ColoredWritef(httpStatusCodeColor(response_code), "%6d ", response_code).
@@ -220,7 +220,7 @@ func (logger *Logger) HttpRequest(
 func (logger *Logger) write(level LevelEnum, message string) {
 	logMutex.Lock()
 	defer logMutex.Unlock()
-	logger.writer.
+	logger.printer.
 		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
 		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		FormattedWritef(level.AnsiColor(), "% 6s", level.String()).
