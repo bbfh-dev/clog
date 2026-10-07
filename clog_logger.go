@@ -105,6 +105,12 @@ func (logger *Logger) SetOutputMode(mode outputModeEnum) *Logger {
 	return logger
 }
 
+// SetOutputFile changes the output file (could be [os.Stdout] or similar).
+func (logger *Logger) SetOutputFile(file *os.File) *Logger {
+	logger.writer.out = file
+	return logger
+}
+
 // Fatal logs a message at the [LOG_FATAL] level.
 func (logger *Logger) Fatal(format string, args ...any) {
 	level := LOG_FATAL
