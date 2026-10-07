@@ -1,8 +1,11 @@
 package clog_test
 
 import (
+	"net/http"
+	"net/url"
 	"os"
 	"testing"
+	"time"
 
 	"codeberg.org/bbfh/clog"
 )
@@ -23,4 +26,9 @@ func print(logger *clog.Logger) {
 	logger.Warn("Something happened with id=%d", 123)
 	logger.Error("Something happened with id=%d", 123)
 	logger.Fatal("Something happened with id=%d", 123)
+	uri, _ := url.Parse("/index")
+	logger.HttpRequest(&http.Request{
+		Method: "GET",
+		URL:    uri,
+	}, time.Now().Add(-25*time.Second), 204)
 }

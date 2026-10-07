@@ -201,9 +201,9 @@ func (logger *Logger) HttpRequest(
 ) {
 	logger.writer.
 		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
-		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 | ")).
-		ColoredWritef(httpStatusCodeColor(response_code), "%3d ", response_code).
-		ColoredWritef(COLOR_BRIGHT_BLACK, "% 6s | ", time.Since(request_start).Round(100*time.Millisecond)).
+		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
+		ColoredWritef(httpStatusCodeColor(response_code), "%6d ", response_code).
+		ColoredWritef(COLOR_BRIGHT_BLACK, "| %-6s | ", time.Since(request_start).Round(100*time.Millisecond)).
 		Writef("%s %q\n", request.Method, request.URL)
 }
 

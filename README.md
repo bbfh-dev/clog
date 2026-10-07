@@ -14,4 +14,8 @@ logger.SetOutputMode(clog.OUTPUT_AUTO).
     UseSyslog()
 
 logger.Notice("Something happened with id=%d", 123)
+
+start_time := time.Now()
+// ...
+logger.HttpRequest(request, start_time, 204)
 ```
