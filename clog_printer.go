@@ -58,6 +58,11 @@ func (printer *Printer) Writef(format string, args ...any) *Printer {
 	return printer
 }
 
+func (printer *Printer) Writeln(line string) *Printer {
+	printer.file.Write([]byte(line + "\n"))
+	return printer
+}
+
 // Styled applies ANSI escape sequence on the text if the output supports it
 func (printer *Printer) Styled(ansi string, text string) *Printer {
 	if printer.cachedSupportsColoredOutput {

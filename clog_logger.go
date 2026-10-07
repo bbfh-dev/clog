@@ -199,7 +199,7 @@ func (logger *Logger) write(level LevelEnum, message string) {
 		Colored(ColorBrightBlack, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		Styledf(level.AnsiColor(), "% 6s", level.String()).
 		Colored(ColorBrightBlack, " | ").
-		Write(message + "\n").
+		Writeln(message).
 		Unlock()
 }
 
