@@ -58,8 +58,8 @@ func (printer *Printer) Writef(format string, args ...any) *Printer {
 	return printer
 }
 
-// FormattedWrite applies ANSI escape sequence on the text if the output supports it
-func (printer *Printer) FormattedWrite(ansi string, text string) *Printer {
+// Styled applies ANSI escape sequence on the text if the output supports it
+func (printer *Printer) Styled(ansi string, text string) *Printer {
 	if printer.cachedSupportsColoredOutput {
 		printer.file.WriteString(ansi)
 		printer.file.WriteString(text)
@@ -70,8 +70,8 @@ func (printer *Printer) FormattedWrite(ansi string, text string) *Printer {
 	return printer
 }
 
-// FormattedWritef applies ANSI escape sequence on the text if the output supports it
-func (printer *Printer) FormattedWritef(ansi string, format string, args ...any) *Printer {
+// Styledf applies ANSI escape sequence on the text if the output supports it
+func (printer *Printer) Styledf(ansi string, format string, args ...any) *Printer {
 	if printer.cachedSupportsColoredOutput {
 		printer.file.WriteString(ansi)
 		fmt.Fprintf(printer.file, format, args...)
@@ -82,14 +82,14 @@ func (printer *Printer) FormattedWritef(ansi string, format string, args ...any)
 	return printer
 }
 
-// ColoredWrite is sugar code for [Printer.FormattedWrite]
-func (printer *Printer) ColoredWrite(color colorCodeEnum, text string) *Printer {
-	return printer.FormattedWrite(AnsiColor(color), text)
+// Colored is sugar code for [Printer.Styled]
+func (printer *Printer) Colored(color colorCodeEnum, text string) *Printer {
+	return printer.Styled(AnsiColor(color), text)
 }
 
-// ColoredWritef is sugar code for [Printer.FormattedWritef]
-func (printer *Printer) ColoredWritef(color colorCodeEnum, format string, args ...any) *Printer {
-	return printer.FormattedWritef(AnsiColor(color), format, args...)
+// Coloredf is sugar code for [Printer.Styledf]
+func (printer *Printer) Coloredf(color colorCodeEnum, format string, args ...any) *Printer {
+	return printer.Styledf(AnsiColor(color), format, args...)
 }
 
 func (printer *Printer) supportsColoredOutput() bool {
