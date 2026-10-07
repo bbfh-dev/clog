@@ -48,17 +48,17 @@ func (level LevelEnum) String() string {
 func (level LevelEnum) AnsiColor() string {
 	switch level {
 	case LOG_FATAL:
-		return AnsiColor(COLOR_RED)
+		return AnsiColor(ColorRed)
 	case LOG_ERROR:
-		return AnsiColor(COLOR_BRIGHT_RED)
+		return AnsiColor(ColorBrightRed)
 	case LOG_WARNING:
-		return AnsiColor(COLOR_BRIGHT_YELLOW)
+		return AnsiColor(ColorBrightYellow)
 	case LOG_NOTICE:
-		return AnsiColor(COLOR_BRIGHT_BLUE)
+		return AnsiColor(ColorBrightBlue)
 	case LOG_INFO:
-		return AnsiColor(COLOR_BRIGHT_CYAN)
+		return AnsiColor(ColorBrightCyan)
 	default:
-		return AnsiColor(COLOR_WHITE)
+		return AnsiColor(ColorWhite)
 	}
 }
 
@@ -210,10 +210,10 @@ func (logger *Logger) HttpRequest(
 	logMutex.Lock()
 	defer logMutex.Unlock()
 	logger.printer.
-		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
-		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
+		ColoredWrite(ColorBrightWhite, logger.name).
+		ColoredWrite(ColorBrightBlack, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		ColoredWritef(httpStatusCodeColor(response_code), "%6d ", response_code).
-		ColoredWritef(COLOR_BRIGHT_BLACK, "| %-6s | ", time.Since(request_start).Round(100*time.Millisecond)).
+		ColoredWritef(ColorBrightBlack, "| %-6s | ", time.Since(request_start).Round(100*time.Millisecond)).
 		Writef("%s %q\n", request.Method, request.URL)
 }
 
@@ -221,10 +221,10 @@ func (logger *Logger) write(level LevelEnum, message string) {
 	logMutex.Lock()
 	defer logMutex.Unlock()
 	logger.printer.
-		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
-		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
+		ColoredWrite(ColorBrightWhite, logger.name).
+		ColoredWrite(ColorBrightBlack, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		FormattedWritef(level.AnsiColor(), "% 6s", level.String()).
-		ColoredWrite(COLOR_BRIGHT_BLACK, " | ").
+		ColoredWrite(ColorBrightBlack, " | ").
 		Write(message + "\n")
 }
 

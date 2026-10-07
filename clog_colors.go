@@ -10,25 +10,25 @@ const AnsiReset = "\033[0m"
 type colorCodeEnum uint8
 
 const (
-	COLOR_BLACK colorCodeEnum = iota
-	COLOR_RED
-	COLOR_GREEN
-	COLOR_YELLOW
-	COLOR_BLUE
-	COLOR_MAGENTA
-	COLOR_CYAN
-	COLOR_WHITE
+	ColorBlack colorCodeEnum = iota
+	ColorRed
+	ColorGreen
+	ColorYellow
+	ColorBlue
+	ColorMagenta
+	ColorCyan
+	ColorWhite
 )
 
 const (
-	COLOR_BRIGHT_BLACK colorCodeEnum = iota + 60
-	COLOR_BRIGHT_RED
-	COLOR_BRIGHT_GREEN
-	COLOR_BRIGHT_YELLOW
-	COLOR_BRIGHT_BLUE
-	COLOR_BRIGHT_MAGENTA
-	COLOR_BRIGHT_CYAN
-	COLOR_BRIGHT_WHITE
+	ColorBrightBlack colorCodeEnum = iota + 60
+	ColorBrightRed
+	ColorBrightGreen
+	ColorBrightYellow
+	ColorBrightBlue
+	ColorBrightMagenta
+	ColorBrightCyan
+	ColorBrightWhite
 )
 
 // AnsiColor creates an ansi escape sequence for setting color.
@@ -89,16 +89,16 @@ func AnsiColorBg8(n uint8) string {
 
 func httpStatusCodeColor(code int) colorCodeEnum {
 	if code >= 500 {
-		return COLOR_BRIGHT_RED
+		return ColorBrightRed
 	}
 	if code >= 400 {
-		return COLOR_BRIGHT_YELLOW
+		return ColorBrightYellow
 	}
 	if code >= 300 {
-		return COLOR_BRIGHT_BLUE
+		return ColorBrightBlue
 	}
 	if code >= 200 {
-		return COLOR_BRIGHT_GREEN
+		return ColorBrightGreen
 	}
-	return COLOR_BRIGHT_WHITE
+	return ColorBrightWhite
 }
