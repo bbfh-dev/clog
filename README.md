@@ -2,6 +2,8 @@
 
 a Go library for clogging the output: syslog, stdout, stderr; with optional ansi-based formatting.
 
+[Go Documentation](https://pkg.go.dev/codeberg.org/bbfh/clog)
+
 ## Example usage
 
 ```go
