@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
 	"testing"
 	"time"
 
@@ -16,6 +17,17 @@ func TestFormattingAuto(t *testing.T) {
 	print(logger)
 	logger.SetOutputMode(clog.OUTPUT_COLORED)
 	print(logger)
+}
+
+func TestConcurrency(t *testing.T) {
+	var wg sync.WaitGroup
+	logger := clog.NewLogger("TEST", os.Stdout).SetLevel(clog.LOG_INFO)
+	for i := range 100 {
+		wg.Go(func() {
+			logger.Info("Call from routine %d", i)
+		})
+	}
+	wg.Wait()
 }
 
 func print(logger *clog.Logger) {

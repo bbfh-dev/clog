@@ -1,4 +1,3 @@
-// TODO: Add a mutex
 package clog
 
 import (
@@ -6,8 +5,11 @@ import (
 	"log/syslog"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 )
+
+var logMutex sync.Mutex
 
 type LevelEnum uint8
 
@@ -205,6 +207,8 @@ func (logger *Logger) HttpRequest(
 	request_start time.Time,
 	response_code int,
 ) {
+	logMutex.Lock()
+	defer logMutex.Unlock()
 	logger.writer.
 		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
 		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
@@ -214,6 +218,8 @@ func (logger *Logger) HttpRequest(
 }
 
 func (logger *Logger) write(level LevelEnum, message string) {
+	logMutex.Lock()
+	defer logMutex.Unlock()
 	logger.writer.
 		ColoredWrite(COLOR_BRIGHT_WHITE, logger.name).
 		ColoredWrite(COLOR_BRIGHT_BLACK, time.Now().Format(" 2006/01/02 15:04:05 ")).
