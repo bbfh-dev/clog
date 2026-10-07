@@ -42,6 +42,7 @@ func (level LevelEnum) String() string {
 	}
 }
 
+// [AnsiColor] sequence associated with the level.
 func (level LevelEnum) AnsiColor() string {
 	switch level {
 	case LogFatal:
