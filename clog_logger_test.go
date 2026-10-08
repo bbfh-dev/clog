@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"codeberg.org/bbfh/libclog"
+	libclog "codeberg.org/bbfh/lib-clog"
 )
 
 func TestFormattingAuto(t *testing.T) {

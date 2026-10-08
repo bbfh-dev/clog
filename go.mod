@@ -1,4 +1,4 @@
-module codeberg.org/bbfh/libclog
+module codeberg.org/bbfh/lib-clog
 
 go 1.27.1
 
