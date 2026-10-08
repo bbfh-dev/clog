@@ -1,4 +1,4 @@
-package clog_test
+package libclog_test
 
 import (
 	"net/http"
@@ -8,20 +8,20 @@ import (
 	"testing"
 	"time"
 
-	"codeberg.org/bbfh/clog"
+	"codeberg.org/bbfh/libclog"
 )
 
 func TestFormattingAuto(t *testing.T) {
-	logger := clog.NewLogger("TEST", os.Stdout)
-	logger.SetLevel(clog.LogDebug)
+	logger := libclog.NewLogger("TEST", os.Stdout)
+	logger.SetLevel(libclog.LogDebug)
 	print(logger)
-	logger.SetOutputMode(clog.OutputColored)
+	logger.SetOutputMode(libclog.OutputColored)
 	print(logger)
 }
 
 func TestConcurrency(t *testing.T) {
 	var wg sync.WaitGroup
-	logger := clog.NewLogger("TEST", os.Stdout).SetLevel(clog.LogInfo)
+	logger := libclog.NewLogger("TEST", os.Stdout).SetLevel(libclog.LogInfo)
 	for i := range 100 {
 		wg.Go(func() {
 			logger.Info("Call from routine %d", i)
@@ -30,7 +30,7 @@ func TestConcurrency(t *testing.T) {
 	wg.Wait()
 }
 
-func print(logger *clog.Logger) {
+func print(logger *libclog.Logger) {
 	logger.Trace("Something happened with id=%d", 123)
 	logger.Debug("Something happened with id=%d", 123)
 	logger.Info("Something happened with id=%d", 123)
