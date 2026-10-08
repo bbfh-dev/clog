@@ -116,63 +116,66 @@ func (logger *Logger) SetOutputFile(file *os.File) *Logger {
 }
 
 // Fatal logs a message at the [LogFatal] level.
-func (logger *Logger) Fatal(format string, args ...any) {
-	logger.genericLog(LogFatal, format, args)
+func (logger *Logger) Fatal(format string, args ...any) error {
+	return logger.genericLog(LogFatal, format, args)
 }
 
 // Error logs a message at the [LogError] level.
-func (logger *Logger) Error(format string, args ...any) {
-	logger.genericLog(LogError, format, args)
+func (logger *Logger) Error(format string, args ...any) error {
+	return logger.genericLog(LogError, format, args)
 }
 
 // Warn logs a message at the [LogWarning] level.
-func (logger *Logger) Warn(format string, args ...any) {
-	logger.genericLog(LogWarning, format, args)
+func (logger *Logger) Warn(format string, args ...any) error {
+	return logger.genericLog(LogWarning, format, args)
 }
 
 // Notice logs a message at the [LogNotice] level.
-func (logger *Logger) Notice(format string, args ...any) {
-	logger.genericLog(LogNotice, format, args)
+func (logger *Logger) Notice(format string, args ...any) error {
+	return logger.genericLog(LogNotice, format, args)
 }
 
 // Info logs a message at the [LogInfo] level.
-func (logger *Logger) Info(format string, args ...any) {
-	logger.genericLog(LogInfo, format, args)
+func (logger *Logger) Info(format string, args ...any) error {
+	return logger.genericLog(LogInfo, format, args)
 }
 
 // Debug logs a message at the [LogDebug] level.
-func (logger *Logger) Debug(format string, args ...any) {
-	logger.genericLog(LogDebug, format, args)
+func (logger *Logger) Debug(format string, args ...any) error {
+	return logger.genericLog(LogDebug, format, args)
 }
 
 // Trace logs a message at the [LogTrace] level.
 // Never prints to syslog.
-func (logger *Logger) Trace(format string, args ...any) {
-	logger.genericLog(LogTrace, format, args)
+func (logger *Logger) Trace(format string, args ...any) error {
+	return logger.genericLog(LogTrace, format, args)
 }
 
-func (logger *Logger) genericLog(level LevelEnum, format string, args []any) {
+func (logger *Logger) genericLog(level LevelEnum, format string, args []any) (err error) {
 	if logger.shouldPrint(level) {
 		message := fmt.Sprintf(format, args...)
 		if logger.syslogWriter != nil {
 			switch level {
 			case LogFatal:
-				logger.syslogWriter.Crit(message)
+				err = logger.syslogWriter.Crit(message)
 			case LogError:
-				logger.syslogWriter.Err(message)
+				err = logger.syslogWriter.Err(message)
 			case LogWarning:
-				logger.syslogWriter.Warning(message)
+				err = logger.syslogWriter.Warning(message)
 			case LogNotice:
-				logger.syslogWriter.Notice(message)
+				err = logger.syslogWriter.Notice(message)
 			case LogInfo:
-				logger.syslogWriter.Info(message)
+				err = logger.syslogWriter.Info(message)
 			case LogDebug:
-				logger.syslogWriter.Debug(message)
+				err = logger.syslogWriter.Debug(message)
+			}
+			if err != nil {
+				return err
 			}
 		}
-
-		logger.write(level, message)
+		err = logger.write(level, message)
 	}
+	return err
 }
 
 // Logs an HTTP request regardless of log level.
@@ -181,26 +184,28 @@ func (logger *Logger) HttpRequest(
 	request *http.Request,
 	request_start time.Time,
 	response_code int,
-) {
-	logger.printer.
+) error {
+	return logger.printer.
 		Lock().
 		Colored(ColorBrightWhite, logger.name).
 		Colored(ColorBrightBlack, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		Coloredf(httpStatusCodeColor(response_code), "%6d ", response_code).
 		Coloredf(ColorBrightBlack, "| %-6s | ", time.Since(request_start).Round(100*time.Millisecond)).
 		Writef("%s %q\n", request.Method, request.URL).
-		Unlock()
+		Unlock().
+		ErrorsJoined()
 }
 
-func (logger *Logger) write(level LevelEnum, message string) {
-	logger.printer.
+func (logger *Logger) write(level LevelEnum, message string) error {
+	return logger.printer.
 		Lock().
 		Colored(ColorBrightWhite, logger.name).
 		Colored(ColorBrightBlack, time.Now().Format(" 2006/01/02 15:04:05 ")).
 		Styledf(level.AnsiColor(), "% 6s", level.String()).
 		Colored(ColorBrightBlack, " | ").
 		Writeln(message).
-		Unlock()
+		Unlock().
+		ErrorsJoined()
 }
 
 func (logger *Logger) shouldPrint(level LevelEnum) bool {

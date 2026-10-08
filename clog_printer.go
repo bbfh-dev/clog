@@ -1,6 +1,7 @@
 package libclog
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"sync"
@@ -13,6 +14,7 @@ type Printer struct {
 	file             *os.File
 	mode             outputModeEnum
 	mutex            sync.Mutex
+	errs             []error
 	useColoredOutput bool // cached
 }
 
@@ -21,6 +23,7 @@ func NewPrinter(file *os.File, mode outputModeEnum) *Printer {
 	printer := &Printer{
 		file:  file,
 		mutex: sync.Mutex{},
+		errs:  []error{},
 	}
 	return printer.SetOutputMode(mode)
 }
@@ -40,6 +43,16 @@ func (printer *Printer) Unlock() *Printer {
 	return printer
 }
 
+// Errors returns errors that happened during writing.
+func (printer *Printer) Errors() []error {
+	return printer.errs
+}
+
+// ErrorsJoined is sugar code for joining [Printer.Errors] into a single error.
+func (printer *Printer) ErrorsJoined() error {
+	return errors.Join(printer.Errors()...)
+}
+
 func (printer *Printer) SetOutputMode(mode outputModeEnum) *Printer {
 	printer.mode = mode
 	printer.useColoredOutput = printer.supportsColoredOutput()
@@ -47,17 +60,26 @@ func (printer *Printer) SetOutputMode(mode outputModeEnum) *Printer {
 }
 
 func (printer *Printer) Write(text string) *Printer {
-	printer.file.Write([]byte(text))
+	_, err := printer.file.Write([]byte(text))
+	if err != nil {
+		printer.errs = append(printer.errs, err)
+	}
 	return printer
 }
 
 func (printer *Printer) Writef(format string, args ...any) *Printer {
-	fmt.Fprintf(printer.file, format, args...)
+	_, err := fmt.Fprintf(printer.file, format, args...)
+	if err != nil {
+		printer.errs = append(printer.errs, err)
+	}
 	return printer
 }
 
 func (printer *Printer) Writeln(line string) *Printer {
-	printer.file.Write([]byte(line + "\n"))
+	_, err := printer.file.Write([]byte(line + "\n"))
+	if err != nil {
+		printer.errs = append(printer.errs, err)
+	}
 	return printer
 }
 
@@ -75,12 +97,16 @@ func (printer *Printer) Styled(ansi string, text string) *Printer {
 
 // Styledf applies ANSI escape sequence on the text if the output supports it.
 func (printer *Printer) Styledf(ansi string, format string, args ...any) *Printer {
+	var err error
 	if printer.useColoredOutput {
 		printer.file.WriteString(ansi)
-		fmt.Fprintf(printer.file, format, args...)
+		_, err = fmt.Fprintf(printer.file, format, args...)
 		printer.file.WriteString(AnsiReset)
 	} else {
-		fmt.Fprintf(printer.file, format, args...)
+		_, err = fmt.Fprintf(printer.file, format, args...)
+	}
+	if err != nil {
+		printer.errs = append(printer.errs, err)
 	}
 	return printer
 }
